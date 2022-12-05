@@ -54,7 +54,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
-                        <argument>com.example.FailureHandlingActor</argument>
+                        <argument>com.example.IotMain</argument>
                     </arguments>
                 </configuration>
             </plugin>
