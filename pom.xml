@@ -54,7 +54,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
-                        <argument>com.example.StartStopActor</argument>
+                        <argument>com.example.FailureHandlingActor</argument>
                     </arguments>
                 </configuration>
             </plugin>

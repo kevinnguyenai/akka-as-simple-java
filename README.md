@@ -2,7 +2,7 @@
 
 🍓 Quick Start Introduction
 ----------------- Get Starting with Simple IoT system usecase Example  ----------------
-🍓 Actor Architecture
+🍓 Actor Architecture (hierachical & actor lifecycle & failure handling)
 🍓 First Actor
 🍓 Device Actor
 ☕ Device Group
