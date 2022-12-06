@@ -9,6 +9,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.PostStop;
 
 public class DeviceGroup extends AbstractBehavior<DeviceGroup.Command> {
     public interface Command {
@@ -43,6 +44,11 @@ public class DeviceGroup extends AbstractBehavior<DeviceGroup.Command> {
     public Receive<Command> createReceive() {
         return newReceiveBuilder()
                 .onMessage(DeviceManager.RequestTrackDevice.class, this::onTrackDevice)
+                .onMessage(DeviceManager.RequestDeviceList.class,
+                        r -> r.groupId.equals(groupId),
+                        this::onDeviceList)
+                .onMessage(DeviceTerminated.class, this::onTerminated)
+                .onSignal(PostStop.class, signal -> onPostStop())
                 .build();
     }
 
@@ -55,6 +61,8 @@ public class DeviceGroup extends AbstractBehavior<DeviceGroup.Command> {
                 getContext().getLog().info("Creating device actor for  {}", trackMsg.deviceId);
                 deviceActor = getContext().spawn(Device.create(groupId, trackMsg.deviceId),
                         "device-" + trackMsg.deviceId);
+                getContext()
+                        .watchWith(deviceActor, new DeviceTerminated(deviceActor, groupId, trackMsg.deviceId));
                 deviceIdToActor.put(trackMsg.deviceId, deviceActor);
                 trackMsg.replyTo.tell(new DeviceManager.DeviceRegistered(deviceActor));
             }
@@ -62,6 +70,17 @@ public class DeviceGroup extends AbstractBehavior<DeviceGroup.Command> {
             getContext().getLog().warn("Ingoring TrackDevice request for {}. This actor is responsible for  {}",
                     groupId, this.groupId);
         }
+        return this;
+    }
+
+    private DeviceGroup onTerminated(DeviceTerminated t) {
+        getContext().getLog().info("Device actor for {} has been terminated", t.deviceId);
+        deviceIdToActor.remove(t.deviceId);
+        return this;
+    }
+
+    private DeviceGroup onDeviceList(DeviceManager.RequestDeviceList r) {
+        r.replyTo.tell(new DeviceManager.ReplyDeviceList(r.requestId, deviceIdToActor.keySet()));
         return this;
     }
 

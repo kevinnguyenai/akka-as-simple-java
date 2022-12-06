@@ -56,6 +56,10 @@ public class Device extends AbstractBehavior<Device.Command> {
         }
     }
 
+    static enum Passivate implements Command {
+        INSTANCE
+    }
+
     public static Behavior<Command> create(String groupId, String deviceId) {
         return Behaviors.setup(context -> new Device(context, groupId, deviceId));
     }
@@ -78,6 +82,7 @@ public class Device extends AbstractBehavior<Device.Command> {
         return newReceiveBuilder()
                 .onMessage(RecordTemperature.class, this::onRecordTemperature)
                 .onMessage(ReadTemperature.class, this::onReadTemperature)
+                .onMessage(Passivate.class, m -> Behaviors.stopped())
                 .onSignal(PostStop.class, signal -> onPostStop())
                 .build();
     }
@@ -94,9 +99,9 @@ public class Device extends AbstractBehavior<Device.Command> {
         return this;
     }
 
-    private Device onPostStop() {
+    private Behavior<Command> onPostStop() {
         getContext().getLog().info("Device actor {}-{} stopped", groupId, deviceId);
-        return this;
+        return Behaviors.stopped();
     }
 
 }
