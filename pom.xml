@@ -54,7 +54,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
-                        <argument>com.example.IotMain</argument>
+                        <argument>com.example.ChatRoomMain</argument>
                     </arguments>
                 </configuration>
             </plugin>
