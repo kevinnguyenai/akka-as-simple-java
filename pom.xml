@@ -54,7 +54,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
-                        <argument>com.example.ChatRoomMain</argument>
+                        <argument>com.example.StructureTesting</argument>
                     </arguments>
                 </configuration>
             </plugin>
